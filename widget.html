@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Оценка сервиса</title>
+
+<style>
+:root {
+  --brand-color: #2b7cff;
+  --bg-color: #f4f6f8;
+  --card-bg: #ffffff;
+  --text-color: #1f2937;
+  --muted-color: #6b7280;
+  --border-color: #e5e7eb;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.widget {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+/* ===== UI ===== */
+.icon-circle {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: rgba(43,124,255,.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--brand-color);
+}
+
+h2 {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 20px;
+}
+
+p {
+  margin: 0 0 20px;
+  text-align: center;
+  color: var(--muted-color);
+  font-size: 14px;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.star {
+  font-size: 42px;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: transform .15s, color .15s;
+}
+
+.star:hover { transform: scale(1.1); }
+.star.active { color: #facc15; }
+
+.rate-bad { color: #dc2626; }
+.rate-ok { color: #ca8a04; }
+.rate-good { color: #16a34a; }
+
+.step { display: none; animation: fade .25s ease; }
+.step1 { display: block; }
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Buttons ===== */
+a, button {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--brand-color);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a:hover, button:hover {
+  opacity: .95;
+}
+
+.back-btn {
+  background: transparent;
+  color: var(--muted-color);
+  border: 1px solid var(--border-color);
+}
+
+.back-btn:hover {
+  background: #f3f4f6;
+}
+
+/* ===== Form ===== */
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--brand-color);
+}
+
+textarea { resize: none; }
+
+.footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-color);
+}
+
+/* ===== Copyright ===== */
+.copyright {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-color);
+}
+</style>
+</head>
+
+<body>
+
+<div class="widget">
+
+  <!-- STEP 1 -->
+  <div class="step step1">
+    <div class="icon-circle">⭐</div>
+    <h2>Как вам обслуживание?</h2>
+    <p id="rateHint">Ваше мнение очень важно</p>
+
+    <div class="stars">
+      <span class="star" data-rate="1">★</span>
+      <span class="star" data-rate="2">★</span>
+      <span class="star" data-rate="3">★</span>
+      <span class="star" data-rate="4">★</span>
+      <span class="star" data-rate="5">★</span>
+    </div>
+
+    <div class="footer-note">
+      Мы читаем каждый отзыв
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step step2">
+    <h2>Спасибо за оценку!</h2>
+    <p>Будем рады вашему отзыву</p>
+
+    <a id="linkYandex" target="_blank">Оставить отзыв в Яндекс</a>
+    <a id="link2gis" target="_blank">Оставить отзыв в 2ГИС</a>
+
+    <button class="back-btn" onclick="resetWidget()">← Назад</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step step3">
+    <h2>Нам важно ваше мнение</h2>
+    <p>Опишите проблему — мы разберёмся</p>
+
+    <form id="form" action="https://hook.eu1.make.com/XXXXXXXXXXXX" method="POST">
+      <input type="hidden" name="rating" id="rating">
+      <input type="hidden" name="datetime" id="datetime">
+      <input type="text" name="company" style="display:none">
+
+      <input type="text" name="name" placeholder="Ваше имя" required>
+      <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__">
+      <textarea name="message" rows="4" placeholder="Опишите ситуацию" required></textarea>
+
+      <button type="submit">Отправить</button>
+      <button type="button" class="back-btn" onclick="resetWidget()">← Назад</button>
+    </form>
+  </div>
+
+  <!-- COPYRIGHT -->
+  <div class="copyright" id="copyright">
+    Виджет создан с любовью <strong>Boxmedia</strong>
+  </div>
+
+</div>
+
+<script>
+/* ===== URL PARAMS ===== */
+const params = new URLSearchParams(window.location.search);
+if (params.get('color')) {
+  document.documentElement.style.setProperty('--brand-color', '#' + params.get('color'));
+}
+if (params.get('yandex')) linkYandex.href = params.get('yandex');
+if (params.get('gis')) link2gis.href = params.get('gis');
+
+/* ===== FREE / PRO ===== */
+if (params.get('pro') === '1') {
+  document.getElementById('copyright').style.display = 'none';
+}
+
+/* ===== STARS ===== */
+const stars = document.querySelectorAll('.star');
+const rateHint = document.getElementById('rateHint');
+let locked = false;
+
+const hints = {
+  1: 'Очень плохо 😞',
+  2: 'Не понравилось 😕',
+  3: 'Нормально 😐',
+  4: 'Хорошо 😊',
+  5: 'Отлично 😍'
+};
+
+stars.forEach((star, i) => {
+  star.addEventListener('mouseenter', () => {
+    if (locked) return;
+    rateHint.textContent = hints[i + 1];
+    rateHint.className = i < 2 ? 'rate-bad' : i === 2 ? 'rate-ok' : 'rate-good';
+  });
+
+  star.addEventListener('mouseleave', () => {
+    if (locked) return;
+    rateHint.textContent = 'Ваше мнение очень важно';
+    rateHint.className = '';
+  });
+
+  star.addEventListener('click', () => {
+    if (locked) return;
+    locked = true;
+
+    document.getElementById('rating').value = i + 1;
+    document.getElementById('datetime').value = new Date().toISOString();
+    highlight(i + 1);
+    showStep(i + 1 >= 4 ? 2 : 3);
+  });
+});
+
+function highlight(n) {
+  stars.forEach((s, i) => s.classList.toggle('active', i < n));
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
+  document.querySelector('.step' + n).style.display = 'block';
+}
+
+function resetWidget() {
+  locked = false;
+  highlight(0);
+  showStep(1);
+}
+
+/* ===== PHONE MASK ===== */
+phone.addEventListener('input', () => {
+  let d = phone.value.replace(/\D/g, '').replace(/^7/, '');
+  let f = '+7';
+  if (d.length > 0) f += ' (' + d.slice(0,3);
+  if (d.length >= 4) f += ') ' + d.slice(3,6);
+  if (d.length >= 7) f += '-' + d.slice(6,8);
+  if (d.length >= 9) f += '-' + d.slice(8,10);
+  phone.value = f;
+});
+
+/* ===== SUBMIT ===== */
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+  if (res.ok) {
+    window.location.href = '/thank-you.html';
+  } else {
+    alert('Ошибка отправки');
+  }
+});
+</script>
+
+</body>
+</html>
